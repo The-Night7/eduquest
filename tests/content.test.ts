@@ -2,15 +2,30 @@ import { describe, expect, it } from "vitest";
 import { build, CHAPTERS, makeMission } from "../src/content";
 import { fval } from "../src/core/fraction";
 import { isRight, isRightStep, parseNum } from "../src/game/answer";
+import { wrapFracs } from "../src/core/tex";
 import type { NumRaw, Question } from "../src/types";
 
 const gens = CHAPTERS.flatMap((ch, ci) => ch.levels.flatMap((lv, li) => lv.gens.map(([id], gi) => ({ ci, lv, li, gi, id }))));
 
 const textOf = (q: Question): string => JSON.stringify(q, (_k, v) => (typeof v === "object" && v && "n" in v && "d" in v ? `${v.n}/${v.d}` : v));
 
+/** Toutes les chaînes affichables d'une question. */
+function strings(v: unknown, out: string[] = []): string[] {
+  if (typeof v === "string") out.push(v);
+  else if (Array.isArray(v)) v.forEach((x) => strings(x, out));
+  else if (v && typeof v === "object") Object.values(v).forEach((x) => strings(x, out));
+  return out;
+}
+
 /** Vérifie la cohérence interne d'une question, quel que soit son type. */
 export function checkStructure(q: Question): void {
   expect(q.q.length).toBeGreaterThan(5);
+  // pas de LaTeX « nu » hors des $…$ (sinon il s'afficherait tel quel à l'écran)
+  for (const str of strings(q)) {
+    const outside = wrapFracs(str).split("$").filter((_, i) => i % 2 === 0).join(" ");
+    expect(outside, str).not.toMatch(/\\[a-zA-Z]/);
+    expect(str.split("$").length % 2, str).toBe(1); // $ appariés
+  }
   expect(textOf(q)).not.toMatch(/undefined|NaN|\[object|[:,\\[]null/);
   switch (q.k) {
     case "qcm":
@@ -199,5 +214,13 @@ describe("missions", () => {
         expect(qs[6]?.li).toBeLessThanOrEqual(li);
         expect(qs.every((q) => q.ci === ci)).toBe(true);
       }));
+  });
+});
+
+describe("wrapFracs", () => {
+  it("enveloppe les fractions nues et laisse le reste", () => {
+    expect(wrapFracs("x = \\frac{1}{2} et -\\frac{3}{4}")).toBe("x = $\\frac{1}{2}$ et $-\\frac{3}{4}$");
+    expect(wrapFracs("déjà $\\frac{1}{2}$ ok")).toBe("déjà $\\frac{1}{2}$ ok");
+    expect(wrapFracs("un $ seul")).toBe("un $ seul");
   });
 });

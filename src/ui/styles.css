@@ -93,3 +93,7 @@ h2.sec{color:#fff;margin:6px 0 10px}
 .chip.right{background:#bff0c3}.chip.wrong{background:#ffc9cb}
 .hintbox{margin:8px 0;padding:8px;background:#fff6d6;border:2px dashed #b58900;border-radius:8px;font-size:13px;line-height:1.7}
 .choice.conf small{color:var(--muted)}
+.recap-steps{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.rs{padding:8px 10px;border:2px solid #000;border-radius:8px;font-size:13px;line-height:1.6}
+.rs b{font-family:'Press Start 2P',monospace;font-size:9px;margin-right:6px}
+.rs.ok{background:#d7f5d9}.rs.ko{background:#ffd9da}

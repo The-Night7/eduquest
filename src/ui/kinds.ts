@@ -89,9 +89,14 @@ export function mountGuided(el: HTMLElement, q: GuidedRaw, done: (missed: number
   let k = 0;
   let missed = 0;
   let hints = 0;
+  const results: boolean[] = [];
   const step = (): void => {
     const st = q.steps[k];
-    if (!st) return done(missed, hints);
+    if (!st) {
+      el.innerHTML = `<div class="recap-steps">${results.map((ok, i) => `<div class="rs ${ok ? "ok" : "ko"}"><b>${i + 1}</b> ${ok ? "✓" : "✗"} ${safe(q.steps[i]?.q ?? "")}</div>`).join("")}</div>`;
+      typeset(el);
+      return done(missed, hints);
+    }
     let shown = 0;
     let answered = false;
     el.innerHTML = `<div class="gstep"><div class="px" style="font-size:9px;color:var(--muted)">ÉTAPE ${k + 1} / ${q.steps.length}</div>
@@ -106,6 +111,7 @@ export function mountGuided(el: HTMLElement, q: GuidedRaw, done: (missed: number
       if (answered) return;
       answered = true;
       if (!ok) missed++;
+      results.push(ok);
       ok ? sfx.ok() : sfx.ko();
       if (st.ans.k === "qcm") {
         qsa<HTMLButtonElement>(".choice", el).forEach((c, i) => {
