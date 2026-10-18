@@ -1,35 +1,89 @@
 import { describe, expect, it } from "vitest";
-import { build, LEVELS, makeMission } from "../src/content";
+import { build, CHAPTERS, makeMission } from "../src/content";
 import { fval } from "../src/core/fraction";
-import { isRight, parseNum } from "../src/game/answer";
+import { isRight, isRightStep, parseNum } from "../src/game/answer";
 import type { NumRaw, Question } from "../src/types";
 
-const gens = LEVELS.flatMap((lv, li) => lv.gens.map(([id], gi) => ({ lv, li, gi, id })));
+const gens = CHAPTERS.flatMap((ch, ci) => ch.levels.flatMap((lv, li) => lv.gens.map(([id], gi) => ({ ci, lv, li, gi, id }))));
+
+const textOf = (q: Question): string => JSON.stringify(q, (_k, v) => (typeof v === "object" && v && "n" in v && "d" in v ? `${v.n}/${v.d}` : v));
+
+/** Vérifie la cohérence interne d'une question, quel que soit son type. */
+export function checkStructure(q: Question): void {
+  expect(q.q.length).toBeGreaterThan(5);
+  expect(textOf(q)).not.toMatch(/undefined|NaN|\[object|[:,\\[]null/);
+  switch (q.k) {
+    case "qcm":
+      expect(q.a).toBeGreaterThanOrEqual(0);
+      expect(q.a).toBeLessThan(q.o.length);
+      expect(new Set(q.o).size).toBe(q.o.length); // pas de doublons dans les options
+      expect(isRight(q, q.a)).toBe(true);
+      break;
+    case "num":
+      expect(Number.isFinite(fval(q.ans))).toBe(true);
+      expect(isRight(q, `${q.ans.n}/${q.ans.d}`)).toBe(true);
+      break;
+    case "bug":
+      expect(q.lines.length).toBeGreaterThanOrEqual(3);
+      expect(new Set(q.lines).size).toBe(q.lines.length);
+      expect(q.bad).toBeGreaterThanOrEqual(0);
+      expect(q.bad).toBeLessThan(q.lines.length);
+      expect(q.fixes.length).toBeGreaterThanOrEqual(2);
+      expect(new Set(q.fixes).size).toBe(q.fixes.length);
+      expect(q.fixes[q.fix]).toBeDefined();
+      // la ligne fausse n'est pas listée parmi les corrections (sinon la question est triviale)
+      expect(q.fixes).not.toContain(q.lines[q.bad]);
+      expect(isRight(q, `${q.bad}:${q.fix}`)).toBe(true);
+      expect(isRight(q, `${q.bad}:${(q.fix + 1) % q.fixes.length}`)).toBe(false);
+      expect(q.exp.length).toBeGreaterThan(10);
+      break;
+    case "order":
+      expect(q.sol.length).toBeGreaterThanOrEqual(3);
+      expect(new Set(q.sol).size).toBe(q.sol.length);
+      for (const i of q.sol) expect(q.pool[i]).toBeDefined();
+      expect(new Set(q.pool).size).toBe(q.pool.length);
+      expect(q.pool.length).toBeGreaterThan(q.sol.length); // au moins un intrus
+      expect(isRight(q, q.sol.join(","))).toBe(true);
+      expect(isRight(q, [...q.sol].reverse().join(","))).toBe(false);
+      break;
+    case "guided":
+      expect(q.steps.length).toBeGreaterThanOrEqual(2);
+      for (const st of q.steps) {
+        expect(st.hints.length).toBeGreaterThanOrEqual(1);
+        expect(st.exp.length).toBeGreaterThan(5);
+        if (st.ans.k === "qcm") {
+          expect(st.ans.a).toBeLessThan(st.ans.o.length);
+          expect(new Set(st.ans.o).size).toBe(st.ans.o.length);
+          expect(isRightStep(st.ans, st.ans.a)).toBe(true);
+        } else expect(isRightStep(st.ans, `${st.ans.ans.n}/${st.ans.ans.d}`)).toBe(true);
+      }
+      break;
+  }
+}
 
 describe("structure de toutes les questions générées", () => {
-  for (const { lv, li, gi, id } of gens) {
+  for (const { ci, lv, li, gi, id } of gens) {
     it(`${lv.id}:${id}`, () => {
-      for (let t = 0; t < 1500; t++) {
-        const q = build(li, gi);
-        expect(q.q.length).toBeGreaterThan(5);
-        expect(`${q.q}${q.exp}${q.k === "qcm" ? q.o.join("") : ""}`).not.toMatch(/undefined|NaN|\[object/);
-        if (q.k === "qcm") {
-          expect(q.a).toBeGreaterThanOrEqual(0);
-          expect(q.a).toBeLessThan(q.o.length);
-          expect(new Set(q.o).size).toBe(q.o.length); // pas de doublons dans les options
-          expect(isRight(q, q.a)).toBe(true);
-        } else {
-          expect(Number.isFinite(fval(q.ans))).toBe(true);
-          expect(isRight(q, `${q.ans.n}/${q.ans.d}`)).toBe(true);
-        }
-      }
+      for (let t = 0; t < 1500; t++) checkStructure(build(ci, li, gi));
     });
   }
 });
 
+describe("identifiants uniques", () => {
+  it("niveaux et générateurs", () => {
+    const ids = CHAPTERS.flatMap((c) => c.levels.map((l) => l.id));
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const c of CHAPTERS) for (const l of c.levels) {
+      const g = l.gens.map(([id]) => id);
+      expect(new Set(g).size).toBe(g.length);
+      expect(l.rappel.length).toBeGreaterThan(0);
+    }
+  });
+});
+
 describe("réponses numériques recoupées par un calcul indépendant", () => {
   const num = (li: number, gi: number): Question & NumRaw => {
-    const q = build(li, gi);
+    const q = build(0, li, gi);
     if (q.k !== "num") throw new Error("num attendu");
     return q;
   };
@@ -100,7 +154,7 @@ describe("réponses numériques recoupées par un calcul indépendant", () => {
   it("d'Alembert : limite du rapport", () => {
     let seen = 0;
     for (let t = 0; t < N * 3; t++) {
-      const q = build(3, 0);
+      const q = build(0, 3, 0);
       if (q.k !== "num") continue;
       seen++;
       const n = 1e5;
@@ -137,12 +191,13 @@ describe("saisie", () => {
 describe("missions", () => {
   it("6 questions + 1 boss, pour chaque niveau", () => {
     for (let i = 0; i < 100; i++)
-      LEVELS.forEach((_, li) => {
-        const qs = makeMission(li);
+      CHAPTERS.forEach((ch, ci) => ch.levels.forEach((_, li) => {
+        const qs = makeMission(ci, li);
         expect(qs).toHaveLength(7);
         expect(qs.filter((q) => q.boss)).toHaveLength(1);
         expect(qs[6]?.boss).toBe(true);
         expect(qs[6]?.li).toBeLessThanOrEqual(li);
-      });
+        expect(qs.every((q) => q.ci === ci)).toBe(true);
+      }));
   });
 });

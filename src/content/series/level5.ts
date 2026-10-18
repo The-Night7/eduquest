@@ -1,9 +1,9 @@
 // Niveau 5 : Séries à termes quelconques (fiche 5)
-import { fgt1, Fr, fmul, ftex, fval } from "../core/fraction";
-import { pick } from "../core/rng";
-import { L, m, powN, pwn } from "../core/tex";
-import type { Level, RawQuestion } from "../types";
-import { ABS3, Nat, Num, poolVF, Qcm } from "./factories";
+import { fgt1, Fr, fmul, ftex, fval } from "../../core/fraction";
+import { pick } from "../../core/rng";
+import { L, m, powN, pwn } from "../../core/tex";
+import type { Level, RawQuestion } from "../../types";
+import { ABS3, Nat, Num, poolVF, Qcm } from "../factories";
 
 /** CSSA : plus petit n tel que a_{n+1} ≤ 10^-k. */
 function rem(): RawQuestion {

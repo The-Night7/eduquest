@@ -1,9 +1,9 @@
 // Niveau 3 : Séries à termes positifs (fiche 3)
-import { fadd, fdiv, fgt1, Fr, fmul, ftex, type Fraction } from "../core/fraction";
-import { pick, ri } from "../core/rng";
-import { invPow, L, m, powN, pwn } from "../core/tex";
-import type { Level, RawQuestion } from "../types";
-import { Nat, poolVF } from "./factories";
+import { fadd, fdiv, fgt1, Fr, fmul, ftex, type Fraction } from "../../core/fraction";
+import { pick, ri } from "../../core/rng";
+import { invPow, L, m, powN, pwn } from "../../core/tex";
+import type { Level, RawQuestion } from "../../types";
+import { Nat, poolVF } from "../factories";
 
 function nat(): RawQuestion {
   const kind = ri(0, 5);

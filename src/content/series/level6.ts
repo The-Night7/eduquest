@@ -1,9 +1,9 @@
 // Niveau 6 : Calculer une somme (fiche 6)
-import { fdiv, Fr, ftex, Hk } from "../core/fraction";
-import { ri } from "../core/rng";
-import { L, m } from "../core/tex";
-import type { Level, RawQuestion } from "../types";
-import { Num, poolQcm, poolVF } from "./factories";
+import { fdiv, Fr, ftex, Hk } from "../../core/fraction";
+import { ri } from "../../core/rng";
+import { L, m } from "../../core/tex";
+import type { Level, RawQuestion } from "../../types";
+import { Num, poolQcm, poolVF } from "../factories";
 
 function pf(): RawQuestion {
   const k = ri(1, 4);

@@ -1,9 +1,9 @@
 // Niveau 1 : Vocabulaire et questions de cours (fiche 1)
-import { Fr, ftex } from "../core/fraction";
-import { pick, rand, ri } from "../core/rng";
-import { invPow, L, lin, m } from "../core/tex";
-import type { Level, RawQuestion } from "../types";
-import { CONC3, poolVF, Qcm } from "./factories";
+import { Fr, ftex } from "../../core/fraction";
+import { pick, rand, ri } from "../../core/rng";
+import { invPow, L, lin, m } from "../../core/tex";
+import type { Level, RawQuestion } from "../../types";
+import { CONC3, poolVF, Qcm } from "../factories";
 
 function zero(): RawQuestion {
   const k = ri(1, 5);
