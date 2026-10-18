@@ -1,9 +1,9 @@
 // Niveau 7 : Équivalents et développements limités (fiche 7)
-import { fgt1, Fr, fmul, ftex, type Fraction } from "../core/fraction";
-import { pick, rand, ri, shuffle } from "../core/rng";
-import { invPow, L, m, powN } from "../core/tex";
-import type { Level, RawQuestion } from "../types";
-import { Nat, poolQcm, poolVF, Qcm } from "./factories";
+import { fgt1, Fr, fmul, ftex, type Fraction } from "../../core/fraction";
+import { pick, rand, ri, shuffle } from "../../core/rng";
+import { invPow, L, m, powN } from "../../core/tex";
+import type { Level, RawQuestion } from "../../types";
+import { Nat, poolQcm, poolVF, Qcm } from "../factories";
 
 interface EqForm {
   t: (u: string) => string; // LaTeX de f(u)

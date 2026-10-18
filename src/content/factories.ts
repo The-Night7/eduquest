@@ -1,6 +1,6 @@
 import { pick, shuffle } from "../core/rng";
 import type { Fraction } from "../core/fraction";
-import type { NumRaw, QcmRaw } from "../types";
+import type { BugRaw, GuidedRaw, GuidedStep, NumRaw, OrderRaw, QcmRaw } from "../types";
 
 export const NAT2 = ["Converge", "Diverge"];
 export const ABS3 = ["Absolument convergente", "Semi-convergente", "Divergente"];
@@ -44,3 +44,27 @@ export const poolQcm = (items: readonly QcmItem[]) => (): QcmRaw => {
   const it = pick(items);
   return Qcm(it.q, [it.r, ...it.w], 0, it.e, true);
 };
+
+/**
+ * « Trouve l'erreur ». `fixes[0]` est la bonne version de la ligne fausse `bad` ;
+ * les autres sont des corrections plausibles mais fausses. Les propositions sont mélangées.
+ */
+export function Bug(q: string, lines: string[], bad: number, fixes: string[], exp: string): BugRaw {
+  const sh = shuffle(fixes.map((t, i) => ({ t, ok: i === 0 })));
+  return { k: "bug", q, lines, bad, fixes: sh.map((x) => x.t), fix: sh.findIndex((x) => x.ok), exp };
+}
+/** « Reconstitue la preuve ». `steps` dans le bon ordre ; `decoys` = intrus. La banque est mélangée. */
+export function Order(q: string, steps: string[], decoys: string[], exp = ""): OrderRaw {
+  const pool = shuffle([...steps, ...decoys]);
+  return { k: "order", q, pool, sol: steps.map((s) => pool.indexOf(s)), exp };
+}
+/** Étape guidée à choix : `o[0]` est la bonne réponse (mélangée). */
+export function gq(q: string, o: string[], hints: string[], exp: string): GuidedStep {
+  const sh = shuffle(o.map((t, i) => ({ t, ok: i === 0 })));
+  return { q, ans: { k: "qcm", o: sh.map((x) => x.t), a: sh.findIndex((x) => x.ok) }, hints, exp };
+}
+/** Étape guidée à saisie numérique. */
+export function gn(q: string, ans: Fraction, hints: string[], exp: string): GuidedStep {
+  return { q, ans: { k: "num", ans }, hints, exp };
+}
+export const Guided = (q: string, steps: GuidedStep[], exp: string): GuidedRaw => ({ k: "guided", q, steps, exp });

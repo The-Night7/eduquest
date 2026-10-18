@@ -1,9 +1,9 @@
 // Niveau 2 : Séries de référence (fiche 2)
-import { feq, fgt1, Fr, fdiv, fpow, fsub, ftex } from "../core/fraction";
-import { pick, rand, ri } from "../core/rng";
-import { invPow, L, m, powN } from "../core/tex";
-import type { Level, RawQuestion } from "../types";
-import { ABS3, Nat, Num, poolQcm, Qcm } from "./factories";
+import { feq, fgt1, Fr, fdiv, fpow, fsub, ftex } from "../../core/fraction";
+import { pick, rand, ri } from "../../core/rng";
+import { invPow, L, m, powN } from "../../core/tex";
+import type { Level, RawQuestion } from "../../types";
+import { ABS3, Nat, Num, poolQcm, Qcm } from "../factories";
 
 function riemann(): RawQuestion {
   const a = pick([Fr(1, 2), Fr(2, 3), Fr(1), Fr(5, 4), Fr(3, 2), Fr(2), Fr(3), Fr(7, 2), Fr(1, 3), Fr(11, 10)]);

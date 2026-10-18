@@ -18,3 +18,18 @@ export const lin = (a: number, b: number): string =>
 export const pwn = (k: number): string => (k === 1 ? "n" : `n^{${k}}`);
 
 export { ftex };
+
+/** Décimal « à la française » pour du texte brut (2,5 plutôt que \frac{5}{2}). */
+export const dec = (a: Fraction): string => String(Math.round((a.n / a.d) * 1e6) / 1e6).replace(".", ",");
+
+/**
+ * Entoure de $…$ les fractions LaTeX restées dans du texte brut
+ * (les explications fabriquées avec `ftex` hors `m(…)` s'afficheraient sinon en \frac{1}{2}).
+ */
+export function wrapFracs(s: string): string {
+  const parts = s.split("$");
+  if (parts.length % 2 === 0) return s; // $ non appariés : on ne touche à rien
+  return parts
+    .map((p, i) => (i % 2 === 1 ? p : p.replace(/(-?)\\frac\{(\d+)\}\{(\d+)\}/g, (_x, sg: string, a: string, b: string) => `$${sg}\\frac{${a}}{${b}}$`)))
+    .join("$");
+}

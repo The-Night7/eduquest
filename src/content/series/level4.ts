@@ -1,9 +1,9 @@
 // Niveau 4 : Règles de d'Alembert et de Cauchy (fiche 4)
-import { feq, Fr, ftex, fval } from "../core/fraction";
-import { pick, rand, ri } from "../core/rng";
-import { L, m } from "../core/tex";
-import type { Level, RawQuestion } from "../types";
-import { DOUTE3, Num, poolVF, Qcm } from "./factories";
+import { feq, Fr, ftex, fval } from "../../core/fraction";
+import { pick, rand, ri } from "../../core/rng";
+import { L, m } from "../../core/tex";
+import type { Level, RawQuestion } from "../../types";
+import { DOUTE3, Num, poolVF, Qcm } from "../factories";
 
 function ratio(): RawQuestion {
   const t = ri(0, 2);

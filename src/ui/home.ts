@@ -1,25 +1,26 @@
-import { LEVELS } from "../content";
-import { currentStreak, isUnlocked, playerLevel, questDoneToday, starsOf, XP_PER_LEVEL } from "../game/progress";
+import { CHAPTERS } from "../content";
+import {
+  calibration, chapterStars, currentStreak, playerLevel, questDoneToday, XP_PER_LEVEL,
+} from "../game/progress";
 import { getState, reset, save } from "../game/store";
-import { qs, qsa, safe, typeset } from "./dom";
+import { qs, qsa, safe } from "./dom";
 import { sfx } from "./fx";
 import type { Nav } from "./nav";
 import { stopTimer } from "./play";
+
+const pct = (x: number | null): string => (x === null ? "—" : `${Math.round(x * 100)} %`);
 
 export function renderHome(root: HTMLElement, nav: Nav): void {
   stopTimer();
   const st = getState();
   const into = st.xp % XP_PER_LEVEL;
   const done = questDoneToday();
-  const total = LEVELS.length * 3;
-  const got = LEVELS.reduce((s, _, i) => s + starsOf(i), 0);
-  let heroAt = 0;
-  LEVELS.forEach((_, i) => {
-    if (isUnlocked(i)) heroAt = i;
-  });
+  const c3 = calibration(3);
+  const c1 = calibration(1);
+  const tot = CHAPTERS.reduce((a, _, ci) => ({ got: a.got + chapterStars(ci).got, total: a.total + chapterStars(ci).total }), { got: 0, total: 0 });
 
   root.innerHTML = `
-   <div class="top"><h1>QUEST<br>SÉRIES</h1>
+   <div class="top"><h1>EDU<br>QUEST</h1>
      <div><button class="tog ${st.timed ? "on" : ""}" id="tTimed">⚡ ÉCLAIR</button>
           <button class="tog ${st.sound ? "on" : ""}" id="tSound">${st.sound ? "🔊" : "🔇"}</button></div></div>
    <div class="card"><h2>TA PROGRESSION</h2>
@@ -28,27 +29,24 @@ export function renderHome(root: HTMLElement, nav: Nav): void {
      <div class="stats">
        <div class="stat"><b>🔥 ${currentStreak()}</b><span>jours de suite</span></div>
        <div class="stat"><b>${st.xp}</b><span>XP total</span></div>
-       <div class="stat"><b>${got}/${total}</b><span>étoiles</span></div></div></div>
+       <div class="stat"><b>${tot.got}/${tot.total}</b><span>étoiles</span></div></div>
+     ${c3 !== null || c1 !== null ? `<p class="small" style="margin:10px 0 0">🎯 Calibration — réussite quand tu étais certain·e : <b>${pct(c3)}</b> · quand tu devinais : <b>${pct(c1)}</b></p>` : ""}</div>
    <div class="modes">
      <button class="btn gold" id="bQuest" ${done ? "disabled" : ""}>${done ? "✅ QUÊTE FAITE" : "📅 QUÊTE DU JOUR<br>+50 XP"}</button>
      <button class="btn alt" id="bEndless">♾️ MODE INFINI<br>record : ${st.best}</button></div>
-   <div class="map">${LEVELS.map((lv, i) => {
-     const ok = isUnlocked(i);
-     const s = starsOf(i);
-     return `<div class="node ${i % 2 ? "r" : ""} ${ok ? "" : "locked"}" style="--c:${lv.color}">
-       <button class="lvlbtn" data-li="${i}" ${ok ? "" : "disabled"}>
-         ${i === heroAt ? `<span class="hero">🧙‍♀️</span>` : ""}
-         <span class="ic">${ok ? lv.icon : "🔒"}</span>
-         <span class="nm">${i + 1}. ${safe(lv.name)}<small>${lv.fiche}</small></span>
-         <span class="st">${"★".repeat(s)}${"☆".repeat(3 - s)}</span></button>
-       <button class="recap" data-r="${i}" title="Rappel de cours">📖</button></div>`;
+   <h2 class="px sec">MATIÈRES</h2>
+   <div class="chapters">${CHAPTERS.map((ch, ci) => {
+     const s = chapterStars(ci);
+     return `<button class="chap" data-ci="${ci}" style="--c:${ch.color}">
+       <span class="ic">${ch.icon}</span>
+       <span class="nm">${safe(ch.name)}<small>${safe(ch.subject)}</small><small>${safe(ch.blurb)}</small></span>
+       <span class="st">${s.got}/${s.total} ★</span></button>`;
    }).join("")}</div>
    <p style="text-align:center"><a class="reset" id="reset">Réinitialiser ma progression</a></p>`;
 
-  qsa<HTMLButtonElement>(".lvlbtn:not([disabled])", root).forEach((b) => (b.onclick = () => nav.mission(Number(b.dataset.li))));
-  qsa<HTMLButtonElement>(".recap", root).forEach((b) => (b.onclick = () => showRecap(Number(b.dataset.r))));
+  qsa<HTMLButtonElement>(".chap", root).forEach((b) => (b.onclick = () => nav.chapter(Number(b.dataset.ci))));
   qs("#bQuest", root).onclick = () => nav.quest();
-  qs("#bEndless", root).onclick = () => nav.endless();
+  qs("#bEndless", root).onclick = () => nav.endless(-1);
   qs("#tSound", root).onclick = () => {
     st.sound = !st.sound;
     save();
@@ -65,23 +63,5 @@ export function renderHome(root: HTMLElement, nav: Nav): void {
       reset();
       nav.home();
     }
-  };
-}
-
-/** Fenêtre « rappel de cours » d'un niveau. */
-export function showRecap(i: number): void {
-  const lv = LEVELS[i];
-  if (!lv) return;
-  const o = document.createElement("div");
-  o.className = "overlay";
-  o.innerHTML = `<div class="card"><h2>${lv.icon} ${lv.fiche.toUpperCase()} · ${safe(lv.name).toUpperCase()}</h2>
-    <ul>${lv.rappel.map((r) => `<li>${safe(r)}</li>`).join("")}</ul>
-    <div class="trap">⚠️ <b>Piège :</b> ${safe(lv.piege)}</div>
-    <p style="text-align:right;margin-bottom:0"><button class="btn" id="cl">OK</button></p></div>`;
-  document.body.appendChild(o);
-  typeset(o);
-  o.onclick = (e) => {
-    const t = e.target as HTMLElement;
-    if (t === o || t.id === "cl") o.remove();
   };
 }

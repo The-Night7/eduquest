@@ -43,9 +43,12 @@ export function renderResult(root: HTMLElement, s: Session, sum: Summary, nav: N
       <div class="stat"><b>×${fmtMult(sum.bestMultiplier)}</b><span>meilleur combo</span></div></div>
     ${sum.lvlUp ? `<p class="px" style="font-size:11px;color:#b58900">⬆️ NIVEAU ${sum.playerLevel} !</p>` : ""}${extra}
     <div class="actions"><button class="btn ghost" id="h">ACCUEIL</button>
+      ${sum.mode === "mission" ? `<button class="btn ghost" id="map">CARTE</button>` : ""}
       ${sum.mode === "quest" ? "" : `<button class="btn" id="again">REJOUER</button>`}</div></div>`;
 
   qs("#h", root).onclick = () => nav.home();
+  const map = root.querySelector<HTMLButtonElement>("#map");
+  if (map) map.onclick = () => nav.chapter(s.ci);
   const again = root.querySelector<HTMLButtonElement>("#again");
-  if (again) again.onclick = () => (s.mode === "mission" ? nav.mission(s.li) : nav.endless());
+  if (again) again.onclick = () => (s.mode === "mission" ? nav.mission(s.ci, s.li) : nav.endless(s.ci));
 }
