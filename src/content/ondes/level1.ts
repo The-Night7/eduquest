@@ -55,7 +55,18 @@ function qFactor(): RawQuestion {
   );
 }
 
+function morse(): RawQuestion {
+  const D = ri(1, 6), a = ri(1, 5);
+  return Num(
+    `Une molécule diatomique a pour énergie potentielle ${m("E_p(r)=D\\,[1-e^{-a(r-R)}]^2")} avec ${m("D=" + D)} eV et ${m("a=" + a)} nm⁻¹. Autour de l'équilibre ${m("r=R")}, on approxime ${m("E_p")} par un ressort de raideur ${m("k")}. Que vaut ${m("k")} (en eV·nm⁻²) ?`,
+    Fr(2 * D * a * a),
+    `k = E_p''(R). Développons : 1 − e^{−a(r−R)} ≈ a(r−R), donc E_p ≈ D a²(r−R)² = ½k(r−R)² ⇒ k = 2Da² = ${2 * D * a * a}. (Attention : k = +E_p'', pas −E_p''.)`,
+  );
+}
+
 const concepts = poolVF([
+  { q: "Autour d'une position d'équilibre stable, tout potentiel se comporte comme celui d'un ressort de raideur k = E_p''(r_eq) > 0.", t: true, e: "Taylor à l'ordre 2 : E_p ≈ E_p(r_eq) + ½E_p''(r_eq)(r − r_eq)² car E_p'(r_eq) = 0." },
+  { q: "La raideur effective est k = −E_p''(r_eq).", t: false, e: "k = +E_p''(r_eq). Le signe moins est celui de la force F = −dE_p/dr, pas de k." },
   { q: "Dans le régime pseudo-périodique, la pseudo-période est plus grande que la période propre.", t: true, e: "ω = √(ω₀² − γ²) < ω₀ ⇒ T = 2π/ω > T₀." },
   { q: "En régime critique, l'amplitude revient à zéro le plus vite possible sans osciller.", t: true, e: "Régime critique : retour à l'équilibre le plus rapide sans dépassement." },
   { q: "Dans un oscillateur amorti, l'énergie mécanique est conservée.", t: false, e: "Le frottement dissipe : E décroît (∝ e^(−2γt) pour l'enveloppe)." },
@@ -122,7 +133,7 @@ export const level: Level = {
   icon: "🔔",
   color: "#00b4d8",
   gens: [
-    ["w0", omega0], ["E", energy], ["regime", regime], ["pseudo", pseudo], ["Q", qFactor],
+    ["w0", omega0], ["E", energy], ["regime", regime], ["pseudo", pseudo], ["Q", qFactor], ["morse", morse],
     ["concepts", concepts], ["pseudo-bug", pseudoBug], ["regime-proof", regimeProof], ["damped-guided", dampedGuided],
   ],
   piege: "Pseudo-pulsation : ω = √(ω₀² − γ²) (moins, jamais plus). Régimes : γ <, =, > ω₀.",

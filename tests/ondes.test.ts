@@ -83,4 +83,33 @@ describe("Ondes — recoupements", () => {
       expect(fval(b.ans)).toBeCloseTo(10 * Math.log10(fac), 9);
     }
   });
+  it("couplage : valeurs propres de la matrice de raideur / masse (Jacobi 2×2)", () => {
+    for (let t = 0; t < N; t++) {
+      const a = num(3, 0), b = num(3, 1);
+      const get = (q: Question) => ({
+        mass: Number(grab(/m=(\d+)\$ kg/, q.q)[1]),
+        k: Number(grab(/k=(\d+)\$ N\/m et/, q.q)[1]),
+        kap: Number(grab(/\\kappa=(\d+)\$ N/, q.q)[1]),
+      });
+      for (const q of [a, b]) {
+        const { mass, k, kap } = get(q);
+        // matrice M⁻¹K = [[(k+κ)/m, −κ/m], [−κ/m, (k+κ)/m]] : λ = tr/2 ± √((tr/2)² − det)
+        const d = (k + kap) / mass, o = -kap / mass;
+        const tr = 2 * d, det = d * d - o * o;
+        const disc = Math.sqrt((tr / 2) ** 2 - det);
+        const w = [Math.sqrt(tr / 2 - disc), Math.sqrt(tr / 2 + disc)];
+        expect(fval(q.ans)).toBeCloseTo(q.q.includes("EN PHASE") ? (w[0] as number) : (w[1] as number), 9);
+      }
+    }
+  });
+  it("approximation harmonique : k = E_p'' par différences finies", () => {
+    for (let t = 0; t < N; t++) {
+      const q = num(0, 5);
+      const D = Number(grab(/D=(\d+)\$ eV/, q.q)[1]);
+      const a = Number(grab(/a=(\d+)\$ nm/, q.q)[1]);
+      const Ep = (r: number) => D * (1 - Math.exp(-a * r)) ** 2;
+      const h = 1e-4;
+      expect(fval(q.ans)).toBeCloseTo((Ep(h) - 2 * Ep(0) + Ep(-h)) / (h * h), 2);
+    }
+  });
 });

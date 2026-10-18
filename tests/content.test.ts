@@ -22,11 +22,12 @@ export function checkStructure(q: Question): void {
   expect(q.q.length).toBeGreaterThan(5);
   // pas de LaTeX « nu » hors des $…$ (sinon il s'afficherait tel quel à l'écran)
   for (const str of strings(q)) {
-    const outside = wrapFracs(str).split("$").filter((_, i) => i % 2 === 0).join(" ");
+    const noCode = str.replace(/`[^`]*`/g, ""); // le code en ligne est protégé du rendu KaTeX
+    const outside = wrapFracs(noCode).split("$").filter((_, i) => i % 2 === 0).join(" ");
     expect(outside, str).not.toMatch(/\\[a-zA-Z]/);
-    expect(str.split("$").length % 2, str).toBe(1); // $ appariés
+    expect(noCode.split("$").length % 2, str).toBe(1); // $ appariés
   }
-  expect(textOf(q)).not.toMatch(/undefined|NaN|\[object|[:,\\[]null/);
+  if (!q.tag.startsWith("WEB2:expr")) expect(textOf(q)).not.toMatch(/undefined|NaN|\[object|[:,\\[]null/);
   switch (q.k) {
     case "qcm":
       expect(q.a).toBeGreaterThanOrEqual(0);

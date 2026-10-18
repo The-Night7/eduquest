@@ -8,9 +8,11 @@ import { chapter as integproba } from "./integproba";
 import { chapter as ondes } from "./ondes";
 import { chapter as physmod } from "./physmod";
 import { chapter as series } from "./series";
+import { chapter as shs } from "./shs";
+import { chapter as web } from "./web";
 
 /** Les chapitres du jeu, dans l'ordre d'affichage. */
-export const CHAPTERS: readonly Chapter[] = [series, analyse, algebre, integproba, physmod, em, ondes, algo];
+export const CHAPTERS: readonly Chapter[] = [series, analyse, algebre, integproba, physmod, em, ondes, algo, web, shs];
 
 export const levelsOf = (ci: number): readonly Level[] => CHAPTERS[ci]?.levels ?? [];
 export const levelAt = (ci: number, li: number): Level => {

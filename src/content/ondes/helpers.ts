@@ -22,3 +22,10 @@ export const RESO: ReadonlyArray<readonly [number, number, number]> = (() => {
     }
   return out;
 })();
+
+/** (p, q) de même parité, p < q : ω₁ = p et ω₂ = q pour deux masses identiques couplées (k, κ entiers). */
+export const COUP: ReadonlyArray<readonly [number, number]> = (() => {
+  const out: Array<readonly [number, number]> = [];
+  for (let p = 1; p <= 9; p++) for (let q = p + 2; q <= 11; q += 2) out.push([p, q] as const);
+  return out;
+})();
