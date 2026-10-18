@@ -9,7 +9,7 @@ export function texFn(expr: string, vars: string[]): (...a: number[]) => number 
     .replace(/\\dfrac\{([^{}]*)\}\{([^{}]*)\}/g, "(($1)/($2))");
   const set = vars.join("");
   s = s.replace(new RegExp(`([0-9${set}\\)])(?=[${set}\\(])`, "g"), "$1*");
-  s = s.replace(/\)\(/g, ")*(").replace(/([xyt])\*\*(\d+)/g, "($1**$2)");
+  s = s.replace(/\)\(/g, ")*(").replace(/([xyzt])\*\*(\d+)/g, "($1**$2)");
   return Function(...vars, `return (${s});`) as (...a: number[]) => number;
 }
 export const grab = (re: RegExp, s: string): RegExpExecArray => {
