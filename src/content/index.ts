@@ -4,11 +4,12 @@ import { chapter as algebre } from "./algebre";
 import { chapter as analyse } from "./analyse";
 import { chapter as em } from "./em";
 import { chapter as integproba } from "./integproba";
+import { chapter as ondes } from "./ondes";
 import { chapter as physmod } from "./physmod";
 import { chapter as series } from "./series";
 
 /** Les chapitres du jeu, dans l'ordre d'affichage. */
-export const CHAPTERS: readonly Chapter[] = [series, analyse, algebre, integproba, physmod, em];
+export const CHAPTERS: readonly Chapter[] = [series, analyse, algebre, integproba, physmod, em, ondes];
 
 export const levelsOf = (ci: number): readonly Level[] => CHAPTERS[ci]?.levels ?? [];
 export const levelAt = (ci: number, li: number): Level => {
