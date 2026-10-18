@@ -1,0 +1,74 @@
+:root{--bg:#14121f;--panel:#e4dcf5;--ink:#1d1830;--accent:#7c5cff;--green:#4caf50;--gold:#f5b400;--red:#e5484d;--muted:#6d6486;--c:#7c5cff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:#fff;font-family:'JetBrains Mono',monospace;min-height:100vh;overflow-x:hidden}
+.wrap,#app{max-width:640px;margin:0 auto;padding:14px 14px 60px}
+h1,h2,.px{font-family:'Press Start 2P',monospace;line-height:1.6}
+h1{font-size:16px;margin:0}
+h2{font-size:11px;margin:0 0 10px}
+.top{display:flex;justify-content:space-between;align-items:center;margin:6px 0 14px;gap:8px}
+.tog{font-family:'Press Start 2P',monospace;font-size:9px;background:#2a2540;color:#fff;border:2px solid #000;border-radius:8px;padding:8px;cursor:pointer}
+.tog.on{background:var(--gold);color:#000}
+.card{background:var(--panel);color:var(--ink);border:3px solid #000;border-radius:10px;box-shadow:0 5px 0 #000;padding:14px;margin-bottom:16px}
+.bar{height:16px;background:#fff;border:2px solid #000;border-radius:8px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--green);transition:width .5s}
+.lvl{display:flex;justify-content:space-between;font-size:10px;margin:6px 0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.stat{background:#fff;border:2px solid #000;border-radius:8px;text-align:center;padding:8px 2px;color:var(--ink)}
+.stat b{display:block;font-size:18px}
+.stat span{font-size:9px;color:var(--muted);text-transform:uppercase}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+button.btn{font-family:'Press Start 2P',monospace;font-size:10px;line-height:1.5;background:var(--green);color:#fff;border:3px solid #000;border-radius:8px;padding:12px 10px;cursor:pointer;box-shadow:0 4px 0 #000}
+button.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #000}
+button.btn.alt{background:var(--accent)}
+button.btn.gold{background:var(--gold);color:#000}
+button.btn.ghost{background:#fff;color:var(--ink)}
+button.btn:disabled{opacity:.5}
+.map{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+.node{display:flex;gap:8px;align-items:stretch}
+.node.r{flex-direction:row-reverse}
+.lvlbtn{flex:1;display:flex;align-items:center;gap:10px;text-align:left;background:#fff;color:var(--ink);border:3px solid #000;border-left:10px solid var(--c);border-radius:10px;padding:10px;cursor:pointer;font-family:inherit;box-shadow:0 4px 0 #000;position:relative}
+.node.r .lvlbtn{border-left:3px solid #000;border-right:10px solid var(--c)}
+.lvlbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #000}
+.lvlbtn .ic{font-size:28px}
+.lvlbtn .nm{font-size:12px;font-weight:700;flex:1}
+.lvlbtn .nm small{display:block;font-weight:400;color:var(--muted);font-size:10px}
+.lvlbtn .st{font-size:16px;color:var(--gold);text-shadow:1px 1px 0 #000;letter-spacing:1px}
+.node.locked .lvlbtn{opacity:.4;cursor:not-allowed;filter:grayscale(1)}
+.recap{width:44px;border:3px solid #000;border-radius:10px;background:var(--panel);font-size:20px;cursor:pointer;box-shadow:0 4px 0 #000}
+.hero{position:absolute;top:-16px;right:8px;font-size:26px;animation:hop 1s infinite}
+.node.r .hero{right:auto;left:8px}
+@keyframes hop{50%{transform:translateY(-6px)}}
+.hud{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;font-size:12px}
+.hud .hearts{font-size:18px;letter-spacing:2px}
+.combo{font-family:'Press Start 2P',monospace;font-size:10px;background:var(--gold);color:#000;border:2px solid #000;border-radius:8px;padding:6px 8px;min-width:64px;text-align:center}
+.combo.off{opacity:.25}
+.dots{display:flex;gap:4px;margin-bottom:10px}
+.dots i{flex:1;height:8px;border-radius:4px;background:#3a3358}
+.dots i.d{background:var(--green)}.dots i.c{background:var(--gold)}
+.tbar{height:8px;background:#3a3358;border-radius:4px;overflow:hidden;margin-bottom:10px}
+.tbar>i{display:block;height:100%;width:100%;background:var(--gold);transform-origin:left}
+.qcard{border-top:10px solid var(--c)}
+.boss{display:inline-block;font-family:'Press Start 2P',monospace;font-size:9px;background:var(--red);color:#fff;border:2px solid #000;border-radius:6px;padding:4px 6px;margin-bottom:8px;animation:pulse .8s infinite}
+@keyframes pulse{50%{transform:scale(1.08)}}
+.q-text{font-size:16px;line-height:1.8;margin:6px 0 14px}
+.choice{display:block;width:100%;text-align:left;font-family:inherit;font-size:15px;background:#fff;color:var(--ink);border:3px solid #000;border-radius:8px;padding:12px;margin-bottom:8px;cursor:pointer;box-shadow:0 3px 0 #000}
+.choice:active{transform:translateY(2px)}
+.choice.ok{background:#bff0c3}.choice.ko{background:#ffc9cb}
+.choice:disabled{cursor:default}
+input.ans{font-family:inherit;font-size:18px;padding:12px;border:3px solid #000;border-radius:8px;width:100%;margin-bottom:10px}
+.fb{margin-top:12px;padding:12px;border:3px solid #000;border-radius:8px;font-size:14px;line-height:1.8}
+.fb.ok{background:#d7f5d9}.fb.ko{background:#ffd9da}
+.trap{margin-top:8px;padding:8px;background:#fff6d6;border:2px dashed #b58900;border-radius:8px;font-size:13px}
+.small{font-size:12px;color:var(--muted)}
+.shake{animation:shake .4s}
+@keyframes shake{20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.float{position:fixed;left:50%;top:40%;transform:translateX(-50%);font-family:'Press Start 2P',monospace;font-size:20px;color:var(--gold);text-shadow:2px 2px 0 #000;pointer-events:none;animation:up 1s forwards;z-index:20}
+@keyframes up{to{transform:translate(-50%,-90px);opacity:0}}
+.overlay{position:fixed;inset:0;background:rgba(10,8,20,.8);display:flex;align-items:center;justify-content:center;padding:16px;z-index:30}
+.overlay .card{max-width:520px;max-height:85vh;overflow:auto;margin:0}
+.overlay li{margin-bottom:8px;line-height:1.7;font-size:14px}
+.res{text-align:center}
+.res .big{font-size:34px;color:var(--gold);text-shadow:2px 2px 0 #000;margin:8px 0}
+.actions{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:40}
+a.reset{color:#9b92b8;font-size:11px;cursor:pointer;text-decoration:underline}
