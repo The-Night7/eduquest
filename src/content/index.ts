@@ -2,10 +2,11 @@ import { pick, rand, ri, shuffle } from "../core/rng";
 import type { Chapter, Level, Question } from "../types";
 import { chapter as algebre } from "./algebre";
 import { chapter as analyse } from "./analyse";
+import { chapter as integproba } from "./integproba";
 import { chapter as series } from "./series";
 
 /** Les chapitres du jeu, dans l'ordre d'affichage. */
-export const CHAPTERS: readonly Chapter[] = [series, analyse, algebre];
+export const CHAPTERS: readonly Chapter[] = [series, analyse, algebre, integproba];
 
 export const levelsOf = (ci: number): readonly Level[] => CHAPTERS[ci]?.levels ?? [];
 export const levelAt = (ci: number, li: number): Level => {
