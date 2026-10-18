@@ -23,4 +23,7 @@ export const qsa = <T extends Element = HTMLElement>(sel: string, root: ParentNo
   Array.from(root.querySelectorAll<T>(sel));
 
 /** Les énoncés contiennent du LaTeX avec des « < » : on les échappe avant innerHTML. */
-export const safe = (s: string): string => wrapFracs(s).replace(/</g, "&lt;");
+export const safe = (s: string): string =>
+  wrapFracs(s)
+    .replace(/</g, "&lt;")
+    .replace(/`([^`]+)`/g, "<code>$1</code>");
